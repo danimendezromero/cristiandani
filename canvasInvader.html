@@ -155,12 +155,12 @@
         }
       }
 
-      function mensaje(cadena) {
-        var lon = (canvas.width - (53 * cadena.length)) / 2;
-        ctx.fillStyle = "green";
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.font = "bold 80px Rosewood Std";
-        ctx.fillText(cadena, lon, 220);
+      function mensaje(cadena){
+      	var lon = (canvas.width-(53*cadena.length))/2;
+      	ctx.fillStyle = "green";
+      	ctx.clearRect(0,0,canvas.width,canvas.height);
+      	ctx.font = "bold 80px Rosewood Std";
+      	ctx.fillText(cadena,lon,220);
       }
       //Afegeix les funcions aquí
       /*
@@ -173,6 +173,37 @@
       	Comproba pel jugador a veure si xoca amb una bala dels enemics.
       		Si xoca es crida a la funció gameOver().
 					*/
+
+      function colisiones(){
+      	for(var i=0; i<enemigos_array.length; i++){
+      		for(var j=0; j<balas_array.length; j++){
+      			var enemigo = enemigos_array[i];
+      			var bala = balas_array[j];
+      			if(enemigo != null && bala != null){
+      				if((bala.y > enemigo.y)&&
+      				(bala.y < enemigo.y+enemigo.w)&&(bala.x > enemigo.x)&&
+      				(bala.x < enemigo.x+enemigo.w)){
+      						enemigo.vive = false;
+      						enemigos_array[i] = null;
+      						balas_array[j] = null;
+      						puntos += 2;
+      						boing.play();
+      					}
+      			}
+      		}
+      	}
+      	for(var j=0; j<balasEnemigas_array.length; j++){
+      		var bala = balasEnemigas_array[j];
+      		if(bala != null){
+      			if(
+      				(bala.y > jugador.y)&&
+      				(bala.y < jugador.y+jugador.h)&&(bala.x > jugador.x)&&
+      					(bala.x < jugador.x+jugador.w)){
+      					gameOver();
+      			}
+      		}
+      	}
+      }
       /*
       Funció gameOver.
       	S'executa l'audio amb la instrucció: fin.play();
