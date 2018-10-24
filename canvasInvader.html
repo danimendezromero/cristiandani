@@ -21,8 +21,8 @@
     </style>
     <script>
       /*******************
-            VARIABLES
-            ********************/
+                        VARIABLES
+                        ********************/
       var canvas, ctx; //Elements del canvas que ens serviran per printar els objectes
       var x = 100; //Posició inicial del jugador a l'eix de les x
       var y = 100; //Posició inicial del jugador a l'eix de les y
@@ -38,7 +38,7 @@
       //Afegir les variables aquí
       var teclaPulsada = null;
       var tecla = [];
-      var colorBala = "red";
+      var colorBala = "pruple";
       var balas_array = new Array();
       var enemigos_array = new Array();
       var balasEnemigas_array = new Array();
@@ -70,6 +70,7 @@
       		Actualitza la nova posició a l'eix x.
       		Dibuixar el jugador amb la funció drawImage().
       */
+      //BALA
       function Bala(x, y, w) {
         this.x = x;
         this.y = y;
@@ -78,14 +79,14 @@
           ctx.save();
           ctx.fillStyle = colorBala;
           ctx.fillRect(this.x, this.y, this.w, this.w);
-          this.y = this.y - 4;
+          this.y = this.y - 3; //Velocidad de la bala del jugador
           ctx.restore();
         };
         this.dispara = function() {
           ctx.save();
           ctx.fillStyle = colorBala;
           ctx.fillRect(this.x, this.y, this.w, this.w);
-          this.y = this.y + 6;
+          this.y = this.y + 5; //Velocidad de la bala del enemigo
           ctx.restore();
         };
       }
@@ -182,15 +183,16 @@
       	clearTimeout(de);
 				*/
       function gameOver() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height); //Limpia
         balas_array = [];
         enemigos_array = [];
         balasEnemigas_array = [];
-        clearTimeout(de);
         finJuego = true;
         mensaje("FIN DEL JUEGO");
+        clearTimeout(de);
         fin.play();
       }
+
       /*
       Funció score.
       	ctx.save();
@@ -199,6 +201,17 @@
       	ctx.font = "bold 20px Courier";
       	S'imprimeix el text de la puntuació amb la funció: fillText().
       	ctx.restore();
+        */
+      //Puntuación
+      function score() {
+        ctx.save();
+        ctx.fillStyle = "white";
+        ctx.clearRect(0, 0, canvas.width, 55);
+        ctx.font = "bold 20px Courier";
+        ctx.fillText("PUNTUACIÓN: " + puntos, 15, 25);
+        ctx.restore();
+      }
+      /*
       Funció verifica.
       	Comprova si la variable de tecla es esquerra o dreta i suma o resta a l'eix x.
       	Verifica que el jugador no surt de la pantalla.
