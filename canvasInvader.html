@@ -28,9 +28,9 @@
       var y = 100; //Posició inicial del jugador a l'eix de les y
       //Codis de les tecles
       var KEY_ENTER = 13;
-      var KEY_LEFT = 37;
+      var KEY_LEFT = 65; //Tecla a
       var KEY_UP = 38;
-      var KEY_RIGHT = 39;
+      var KEY_RIGHT = 68; //Tecla d
       var KEY_DOWN = 40;
       var BARRA = 32;
       var imagen, imagenEnemigo; //Imatges del jugador i enemic
@@ -280,12 +280,22 @@
           }
       })();
       //Afegeix aquí els events
-      /*
-      Event keydown
-      	Guarda a l'array tecla, com a clau quina tecla s'ha clicat, com a valor un boolean true.
-      Event keyup
-      	Modifica l'array tecla i posa a false el valor.
-      */
+      /*************
+      LISTENER
+      **************/
+      /*Event keydown
+      	Guarda a l'array tecla, com a clau quina tecla s'ha clicat, com a valor un boolean true.*/
+        //Keydown cuando tenemos presionada la tecla y por lo tanto ponemos true (tecla siendo presionada)
+      document.addEventListener("keydown", function(e) {
+        teclaPulsada = e.keyCode;
+        tecla[e.keyCode] = true;
+      });
+      /*Event keyup
+      	Modifica l'array tecla i posa a false el valor.*/
+        //Keyup cuando soltamos la tecla y por lo tanto ponemos false (tecla no pulsada)
+      document.addEventListener("keyup", function(e) {
+        tecla[e.keyCode] = false;
+      });
       /**************
       INICIO
       ***************/
