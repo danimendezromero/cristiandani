@@ -21,8 +21,8 @@
     </style>
     <script>
       /*******************
-                        VARIABLES
-                        ********************/
+      VARIABLES
+      ********************/
       var canvas, ctx; //Elements del canvas que ens serviran per printar els objectes
       var x = 100; //Posició inicial del jugador a l'eix de les x
       var y = 100; //Posició inicial del jugador a l'eix de les y
@@ -48,60 +48,47 @@
       /*****************
       OBJETOS
       ******************/
-      //Afegir els objectes aquí
-      /*
-      Constructor de Bala (paràmetres).
-      	Atributs de l'objecte bala i igualar-los als paràmetres.
-      	Funció "dibujaBalaJugador".
-      		ctx.save();
-      		ctx.fillStyle = colorBala;
-      		Dibuixar la bala utilitzant la funció fillRect()
-      		Actualitza la següent posició de la bala del jugador a l'eix de la y.
-      		ctx.restore();
-      	Funció "dibujaBalaEnemigo".
-      		ctx.save();
-      		ctx.fillStyle = colorBala;
-      		Dibuixar la bala utilitzant la funció fillRect()
-      		Actualitza la següent posició de la bala dels enemics a l'eix de la y.
-      		ctx.restore();
-      Constructor de Jugador (paràmetres).
-      	Atributs de l'objecte jugador i igualar-los als paràmetres.
-      	Funció "dibuja".
-      		Actualitza la nova posició a l'eix x.
-      		Dibuixar el jugador amb la funció drawImage().
-      */
+
       //BALA
       function Bala(x, y, w) {
         this.x = x;
         this.y = y;
         this.w = w;
-        this.dibuja = function() {
+        //Funció que dibuixa la bala del jugador
+        this.dibujaBalaJugador = function() {
           ctx.save();
           ctx.fillStyle = colorBala;
           ctx.fillRect(this.x, this.y, this.w, this.w);
+          //Actualitza la següent posició de la bala dels enemics a l'eix de la y.
           this.y = this.y - 3; //Velocidad de la bala del jugador
           ctx.restore();
         };
-        this.dispara = function() {
+        //Funció que dibuixa la bala enemiga
+        this.dibujaBalaEnemigo = function() {
           ctx.save();
           ctx.fillStyle = colorBala;
           ctx.fillRect(this.x, this.y, this.w, this.w);
+          //Actualitza la següent posició de la bala dels enemics a l'eix de la y.
           this.y = this.y + 5; //Velocidad de la bala del enemigo
           ctx.restore();
         };
       }
 
+      //JUGADOR
       function Jugador(x) {
         this.x = x;
         this.y = 450;
         this.w = 30;
         this.h = 15;
+        //Funció dibuixa al jugador (mostra la sema imatge)
         this.dibuja = function(x) {
+          //Actualitza la nova posició a l'eix x.
           this.x = x;
           ctx.drawImage(imagen, this.x, this.y, this.w, this.h);
         };
       }
 
+      //ENEMIC
       function Enemigo(x, y) {
         this.x = x;
         this.y = y;
@@ -113,9 +100,9 @@
         this.figura = true;
         this.vive = true;
         this.dibuja = function() {
-          //Retraso
+          //Retras
           if (this.ciclos > 30) {
-            //saltitos
+            //Salts
             if (this.veces > this.num) {
               this.dx *= -1;
               this.veces = 0;
@@ -163,22 +150,17 @@
       	ctx.fillText(cadena,lon,220);
       }
       //Afegeix les funcions aquí
-      /*
-      Funció colisiones.
-      	Comproba per tots els enemics a veure si xoca amb una bala del jugador.
-      		Si xoca es borra l'enemic i la bala,
-      		s'executa l'audio amb el codi: boing.play();
-      		s'augmenta els punts i
-      		es crida al mètode score().
-      	Comproba pel jugador a veure si xoca amb una bala dels enemics.
-      		Si xoca es crida a la funció gameOver().
-					*/
 
+      //COLISIONS
       function colisiones(){
+        //Comprobació per tots els enemics a veure si xoca amb una bala del jugador.
       	for(var i=0; i<enemigos_array.length; i++){
       		for(var j=0; j<balas_array.length; j++){
       			var enemigo = enemigos_array[i];
       			var bala = balas_array[j];
+
+            //Si el enemic i la bala son distins a null (es a dir que hi estan)
+            //Si xoca es borra l'enemic i la bala
       			if(enemigo != null && bala != null){
       				if((bala.y > enemigo.y)&&
       				(bala.y < enemigo.y+enemigo.w)&&(bala.x > enemigo.x)&&
@@ -186,17 +168,19 @@
       						enemigo.vive = false;
       						enemigos_array[i] = null;
       						balas_array[j] = null;
-      						puntos += 2;
-      						boing.play();
+      						puntos += 2; //Aument de punts
+      						boing.play(); //Audi
+                  score();
       					}
       			}
       		}
       	}
+        //Comprobació pel jugador a veure si xoca amb una bala dels enemics.
       	for(var j=0; j<balasEnemigas_array.length; j++){
       		var bala = balasEnemigas_array[j];
+          //Si la bala xoca
       		if(bala != null){
-      			if(
-      				(bala.y > jugador.y)&&
+      			if((bala.y > jugador.y)&&
       				(bala.y < jugador.y+jugador.h)&&(bala.x > jugador.x)&&
       					(bala.x < jugador.x+jugador.w)){
       					gameOver();
@@ -204,71 +188,34 @@
       		}
       	}
       }
-      /*
-      Funció gameOver.
-      	S'executa l'audio amb la instrucció: fin.play();
-      	Es neteja el canvas amb la funció clearRect.
-      	Es resetejen tots els arrays.
-      	Es crida a la funció mensaje("Game Over").
-      	Es guarda el final de joc al boolean.
-      	clearTimeout(de);
-				*/
+
+      //GAME OVER
       function gameOver() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); //Limpia
+        ctx.clearRect(0, 0, canvas.width, canvas.height); //Es neteja el canvas amb la funció clearRect.
+        //Es resetejen tots els arrays.
         balas_array = [];
         enemigos_array = [];
         balasEnemigas_array = [];
-        finJuego = true;
-        mensaje("FIN");
+        finJuego = true; //Es guardar el bool per saber que es game over
+        mensaje("GAME OVER");
         clearTimeout(de);
-        fin.play();
+        fin.play(); //Audi
       }
 
-      /*
-      Funció score.
-      	ctx.save();
-      	ctx.fillStyle = "white";
-      	Es neteja el canvas amb la funció clearRect, però només la secció on es troba la puntuació.
-      	ctx.font = "bold 20px Courier";
-      	S'imprimeix el text de la puntuació amb la funció: fillText().
-      	ctx.restore();
-        */
-      //Puntuación
+      //SCORE
       function score() {
         ctx.save();
         ctx.fillStyle = "white";
-        ctx.clearRect(0, 0, canvas.width, 55);
+        ctx.clearRect(0, 0, canvas.width, 55); //Es neteja el canvas amb la funció clearRect, però només la secció on es troba la puntuació.
         ctx.font = "bold 20px Courier";
-        ctx.fillText("PUNTUACIÓN: " + puntos, 15, 25);
+        ctx.fillText("SCORE: " + puntos, 15, 25); //S'imprimeix el text de la puntuació
         ctx.restore();
       }
-      /*
-      Funció verifica.
-      	Comprova si la variable de tecla es esquerra o dreta i suma o resta a l'eix x.
-      	Verifica que el jugador no surt de la pantalla.
-      	Comprova si s'ha clicat la barra.
-      	Si s'ha clicat es crea una nova bala a l'array de bales del jugador,
-      	es borra que s'ha clicat la barra perquè no estigui disparant sempre,
-      	s'executa l'audio amb la instrucció: disparo.play();
-      	y es crida a la funció disparaEnemigo.
-      Funció pinta.
-      	Es neteja tot el canvas amb la funció clearRect.
-      	Es crida a la funció score().
-      	Es crida a la funció dibuixa del jugador.
-      	Es crida a la funció dibujaBalaJugador per a totes les bales del jugador,
-      	si arriben a sortir del canvas s'ha d'eliminar la bala.
-      	Es crida a la funció dibujaBalaEnemigo per a totes les bales dels enemics,
-      	si arriben a sortir del canvas s'ha d'eliminar la bala.
-      	Es crida a la funció dibuixa per a tots els enemics,
-      	si els enemics arriben a la posició y del jugador, es crida a la funció gameOver.
-      Funció disparaEnemigo.
-      	Es guarda en un nou array els 10 enemics més propers al jugador.
-      	Amb un random escull quin dels 10 enemics atacarà.
-      	Crea una nova bala i la guarda a l'array balasEnemigas_array.
-      	clearTimeout(de);
-      	de = setTimeout(disparaEnemigo, tiempoDisparo);
-      */
+
+      //VERIFICA
       function verifica() {
+        //Comprovar si la variable de tecla es esquerra o dreta i suma o resta a l'eix x.
+        //Comprova si s'ha clicat la barra.
         if (tecla[KEY_RIGHT]) {
           x += 8; //tecla derecha que es la d con 8 de velocidad
         }
@@ -283,32 +230,36 @@
           x = 40; //limite izquierda
         }
         //Disparo
+        //Si s'ha clicat es crea una nova bala a l'array de bales del jugador
         if (tecla[BARRA]) {
           balas_array.push(
             new Bala(jugador.x + 12, jugador.y - 5, 5)); //12 es la posicion en la que se crea la bala a partir del objeto, el 5 la altura y el 5 tamaño
-          tecla[BARRA] = false;
+          tecla[BARRA] = false; //es borra que s'ha clicat la barra perquè no estigui disparant sempre
           disparaEnemigo();
           disparo.play();//Música al disparar
         }
       }
+
+      //PINTA
       function pinta() {
-        //Es neteja tot el canvas amb la funció clearRect.
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height); //Es neteja tot el canvas amb la funció clearRect.
         score();
         jugador.dibuja(x);
         //Bales
         for (var i = 0; i < balas_array.length; i++) {
           if (balas_array[i] != null) {
             //Funció dibujaBalaJugador per a totes les bales del jugador
-            balas_array[i].dibuja();
-            if (balas_array[i].y < 0) balas_array[i] = null;
+            balas_array[i].dibujaBalaJugador();
+            //Es comprova si les bales arriben a sortir del canvas s'ha d'eliminar la bala.
+            if (balas_array[i].y < 0){
+               balas_array[i] = null;
+            }
           }
         }
-        //Baless Enemiges
-
+        //Bales Enemiges
         for (var i = 0; i < balasEnemigas_array.length; i++) {
           if (balasEnemigas_array[i] != null) {
-            balasEnemigas_array[i].dispara();
+            balasEnemigas_array[i].dibujaBalaEnemigo();
             if (balasEnemigas_array[i].y > canvas.height) balasEnemigas_array[i] = null;
           }
         }
@@ -322,21 +273,28 @@
             if (enemigos_array[i].y == jugador.y) gameOver();
           }
         }
-        if (numEnemigos == 0) gameOver();
+        //Si no en quedan enemic, es crida la funció gameOver().
+        if (numEnemigos == 0){
+          gameOver();
+        }
       }
 
+      //DISPARAR ENEMIC
       function disparaEnemigo() {
-        //
+        //Es guarda en un nou array els 10 enemics més propers al jugador.
         var sobrevive = new Array();
         for (var i = enemigos_array.length - 1; i > 0; i--) {
           if (enemigos_array[i] != null) {
             sobrevive.push(i);
           }
-          //Es guarda en un nou array els 10 enemics més propers al jugador.
-          if (sobrevive.length == 10) break;
+          //els 10 enemics més propers al jugador.
+          if (sobrevive.length == 10){
+            break;
+          }
         }
+        //Amb un random escull quin dels 10 enemics atacarà.
         var d = sobrevive[Math.floor(Math.random() * 10)];
-        //Nova bala i la guarda a l'array balasEnemigas_array
+        //Crea una nova bala i la guarda a l'array balasEnemigas_array.
         balasEnemigas_array.push(new Bala(enemigos_array[d].x + enemigos_array[d].w / 2,
           enemigos_array[d].y, 5));
           clearTimeout(de);
@@ -358,15 +316,13 @@
       /*************
       LISTENER
       **************/
-      /*Event keydown
-      	Guarda a l'array tecla, com a clau quina tecla s'ha clicat, com a valor un boolean true.*/
+      	//Guarda a l'array tecla, com a clau quina tecla s'ha clicat, com a valor un boolean true.
         //Keydown cuando tenemos presionada la tecla y por lo tanto ponemos true (tecla siendo presionada)
       document.addEventListener("keydown", function(e) {
         teclaPulsada = e.keyCode;
         tecla[e.keyCode] = true;
       });
-      /*Event keyup
-      	Modifica l'array tecla i posa a false el valor.*/
+      	//Modifica l'array tecla i posa a false el valor.
         //Keyup cuando soltamos la tecla y por lo tanto ponemos false (tecla no pulsada)
       document.addEventListener("keyup", function(e) {
         tecla[e.keyCode] = false;
@@ -375,38 +331,38 @@
       INICIO
       ***************/
       window.onload = function(){
-	canvas = document.getElementById("miCanvas");
-	if(canvas && canvas.getContext){
-		ctx = canvas.getContext("2d");
-		if(ctx){
-			var boing = document.getElementById("boing");
-			var disparo = document.getElementById("disparo");
-			var intro = document.getElementById("intro");
-			var fin = document.getElementById("fin");
-			intro.play();
-			x = canvas.width/2;
-			mensaje("INVASORES");
-			 imagen = new Image();
-			 imagenEnemigo = new Image();
-			 imagenEnemigo.src = "imagenes/invader.fw.png";
-			 imagen.src = "imagenes/torre.fw.png";
-			 imagen.onload = function(){
-				jugador = new Jugador(0);
-			 }
-			 imagenEnemigo.onload = function(){
-				for(var i=0; i<5; i++){
-					for(var j=0; j<10; j++){
-						enemigos_array.push(new Enemigo(100+40*j, 30+45*i));
-					}
-				}
-				setTimeout(anima, 3200);
-				de = setTimeout(disparaEnemigo, 3500);
-			 }
-		} else {
-			alert("Error al crear tu contexto");
-		}
-	}
-}
+	    canvas = document.getElementById("miCanvas");
+      	if(canvas && canvas.getContext){
+      		ctx = canvas.getContext("2d");
+      		if(ctx){
+      			var boing = document.getElementById("boing");
+      			var disparo = document.getElementById("disparo");
+      			var intro = document.getElementById("intro");
+      			var fin = document.getElementById("fin");
+      			intro.play();
+      			x = canvas.width/2;
+      			mensaje("INVASORES");
+      			 imagen = new Image();
+      			 imagenEnemigo = new Image();
+      			 imagenEnemigo.src = "imagenes/invader.fw.png";
+      			 imagen.src = "imagenes/torre.fw.png";
+      			 imagen.onload = function(){
+      				jugador = new Jugador(0);
+      			 }
+      			 imagenEnemigo.onload = function(){
+      				for(var i=0; i<5; i++){
+      					for(var j=0; j<10; j++){
+      						enemigos_array.push(new Enemigo(100+40*j, 30+45*i));
+      					}
+      				}
+      				setTimeout(anima, 3200);
+      				de = setTimeout(disparaEnemigo, 3500);
+      			 }
+      		} else {
+      			alert("Error al crear tu contexto");
+      		}
+        }
+      }
     </script>
   </head>
 
